@@ -168,6 +168,11 @@ function toast({ ...props }: Toast) {
   }
 }
 
+// Add static dismiss method to toast function
+toast.dismiss = (toastId?: string) => {
+  dispatch({ type: "DISMISS_TOAST", toastId })
+}
+
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState)
 

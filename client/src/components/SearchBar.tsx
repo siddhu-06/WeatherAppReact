@@ -59,13 +59,14 @@ export default function SearchBar({ onSearch, onFilterToggle }: SearchBarProps) 
   };
   
   const getCurrentLocation = () => {
-    // Show loading toast
+    // Show loading toast with clearer instructions
     const { id: loadingToastId } = toast({
       title: "Detecting Location",
-      description: "Please allow location access if prompted...",
-      duration: 10000,
+      description: "Please allow location access when prompted. This may take a few moments...",
+      duration: 15000, // Longer duration to account for slow connections
     });
 
+    // Check if geolocation is supported by the browser
     if (!navigator.geolocation) {
       // Dismiss loading toast
       toast.dismiss(loadingToastId);
@@ -73,7 +74,7 @@ export default function SearchBar({ onSearch, onFilterToggle }: SearchBarProps) 
       // Show error toast
       toast({
         title: "Browser Error",
-        description: "Geolocation is not supported by your browser.",
+        description: "Geolocation is not supported by your browser. Try using Chrome, Firefox, or Safari.",
         variant: "destructive",
         duration: 5000
       });
@@ -83,13 +84,31 @@ export default function SearchBar({ onSearch, onFilterToggle }: SearchBarProps) 
     // Options for better geolocation accuracy
     const options = {
       enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0
+      timeout: 15000, // Extended timeout
+      maximumAge: 0 // Always get a fresh position
     };
+
+    // Create a safety timeout in case geolocation hangs
+    const safetyTimeoutId = setTimeout(() => {
+      toast.dismiss(loadingToastId);
+      toast({
+        title: "Location Timeout",
+        description: "Location detection is taking too long. Please try again or search manually.",
+        variant: "destructive",
+        duration: 5000
+      });
+      
+      // Dispatch location error event
+      const locationErrorEvent = new Event('location-error');
+      window.dispatchEvent(locationErrorEvent);
+    }, 20000); // 20 second safety timeout
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
+          // Clear safety timeout
+          clearTimeout(safetyTimeoutId);
+          
           // Dismiss loading toast
           toast.dismiss(loadingToastId);
           
@@ -97,7 +116,7 @@ export default function SearchBar({ onSearch, onFilterToggle }: SearchBarProps) 
           const { id: progressToastId } = toast({
             title: "Finding Nearby City",
             description: "Searching for the closest city to your location...",
-            duration: 10000,
+            duration: 15000,
           });
 
           const { latitude, longitude } = position.coords;
@@ -127,41 +146,65 @@ export default function SearchBar({ onSearch, onFilterToggle }: SearchBarProps) 
           } else {
             console.error("No city found near coordinates", { latitude, longitude });
             
-            // Dispatch a custom event to show the location error modal
-            const locationErrorEvent = new Event('location-error');
+            // Dispatch a custom event to show the location error modal with specific error type
+            const locationErrorEvent = new CustomEvent('location-error', {
+              detail: { type: 'notFound' }
+            });
             window.dispatchEvent(locationErrorEvent);
             
             // Also show a toast for immediate feedback
             toast({
               title: "Location Error",
-              description: "Couldn't find a city near your location.",
+              description: "Couldn't find a city near your location. You might be in a remote area.",
               variant: "destructive",
               duration: 5000
             });
           }
         } catch (error) {
+          // Clear safety timeout
+          clearTimeout(safetyTimeoutId);
+          
           console.error("Error in geolocation processing:", error);
           
-          // Dispatch a custom event to show the location error modal
-          const locationErrorEvent = new Event('location-error');
+          // Determine if it's a connection error
+          const isConnectionError = error instanceof Error && 
+            (error.message.includes('network') || 
+             error.message.includes('connection') ||
+             error.message.includes('server'));
+          
+          // Dispatch a custom event to show the location error modal with specific error type
+          const locationErrorEvent = new CustomEvent('location-error', {
+            detail: { type: isConnectionError ? 'connection' : 'notFound' }
+          });
           window.dispatchEvent(locationErrorEvent);
           
           toast({
             title: "Location Error",
-            description: "Failed to find a city near your location. Please try again or search manually.",
+            description: isConnectionError 
+              ? "Connection issue while finding your location. Please check your internet connection."
+              : "Failed to find a city near your location. Please try again or search manually.",
             variant: "destructive",
             duration: 5000
           });
         }
       },
       (error) => {
+        // Clear safety timeout
+        clearTimeout(safetyTimeoutId);
+        
         // Dismiss loading toast
         toast.dismiss(loadingToastId);
         
         console.error("Geolocation error:", error.code, error.message);
         
-        // Dispatch a custom event to show the location error modal
-        const locationErrorEvent = new Event('location-error');
+        // Determine the error type for the modal
+        const errorType = error.code === 1 ? 'permission' : 
+                         (error.code === 2 ? 'notFound' : 'connection');
+        
+        // Dispatch a custom event to show the location error modal with specific error type
+        const locationErrorEvent = new CustomEvent('location-error', {
+          detail: { type: errorType }
+        });
         window.dispatchEvent(locationErrorEvent);
         
         // Show appropriate error message based on the error code
@@ -172,10 +215,10 @@ export default function SearchBar({ onSearch, onFilterToggle }: SearchBarProps) 
             errorMessage = "Location access was denied. Please enable location permissions in your browser settings.";
             break;
           case 2: // POSITION_UNAVAILABLE
-            errorMessage = "Your location could not be determined. Please try again later.";
+            errorMessage = "Your location could not be determined. Please check your device's GPS or location services.";
             break;
           case 3: // TIMEOUT
-            errorMessage = "Location request timed out. Please try again.";
+            errorMessage = "Location request timed out. Please check your internet connection and try again.";
             break;
         }
         

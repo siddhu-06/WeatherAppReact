@@ -9,11 +9,31 @@ interface LocationErrorModalProps {
 export default function LocationErrorModal({ onClose }: LocationErrorModalProps) {
   const [errorType, setErrorType] = useState<"permission" | "notFound" | "connection">("notFound");
   
-  // Try to determine the error type based on browser permissions
+  // Listen for error type from the custom event
   useEffect(() => {
-    // Check if the browser's permissions API is available
+    // Handler for custom event with error type details
+    const handleLocationErrorEvent = (event: Event) => {
+      // Check if this is a CustomEvent with detail
+      if (event instanceof CustomEvent && event.detail && event.detail.type) {
+        setErrorType(event.detail.type);
+      } else {
+        // Fallback to checking permissions if no error type provided
+        checkPermissions();
+      }
+    };
+    
+    // Add listener for custom location-error event
+    window.addEventListener('location-error', handleLocationErrorEvent);
+    
+    return () => {
+      window.removeEventListener('location-error', handleLocationErrorEvent);
+    };
+  }, []);
+  
+  // Try to determine the error type based on browser permissions as a fallback
+  const checkPermissions = () => {
     if (navigator.permissions && navigator.permissions.query) {
-      navigator.permissions.query({ name: 'geolocation' }).then(permissionStatus => {
+      navigator.permissions.query({ name: 'geolocation' as PermissionName }).then(permissionStatus => {
         if (permissionStatus.state === 'denied') {
           setErrorType("permission");
         }
@@ -21,7 +41,7 @@ export default function LocationErrorModal({ onClose }: LocationErrorModalProps)
         // Permissions API failed, keep default
       });
     }
-  }, []);
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">

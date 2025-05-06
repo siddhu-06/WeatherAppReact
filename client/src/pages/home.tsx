@@ -66,8 +66,11 @@ export default function Home() {
   
   // Listen for location error events
   useEffect(() => {
-    const handleLocationError = () => {
+    const handleLocationError = (event: Event) => {
+      // Show the error modal regardless of what type of error it is
       setShowLocationError(true);
+      
+      // We'll let the LocationErrorModal component determine the specific error type
     };
     
     window.addEventListener('location-error', handleLocationError);

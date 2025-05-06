@@ -158,9 +158,34 @@ export default function Weather({ params }: WeatherProps) {
       {isCurrentLoading ? (
         <LoadingState message="Loading weather data..." />
       ) : isCurrentError ? (
-        <ErrorState 
-          message={`Error loading weather data: ${currentError instanceof Error ? currentError.message : 'Unknown error'}`}
-        />
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+          <div className="flex items-start">
+            <div className="flex-shrink-0 text-red-500">
+              <span className="material-icons">error</span>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-800">Error Loading Data</h3>
+              <div className="mt-2 text-sm text-red-700">
+                <p>
+                  {currentError instanceof Error && currentError.message.includes('Rate limited')
+                    ? 'Weather API rate limit reached. Please try again in a few moments.'
+                    : 'There was an error loading the current weather data. Please try refreshing.'}
+                </p>
+              </div>
+              {!(currentError instanceof Error && currentError.message.includes('Rate limited')) && (
+                <div className="mt-4">
+                  <Button
+                    onClick={() => window.location.reload()}
+                    size="sm"
+                    variant="destructive"
+                  >
+                    Try Again
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       ) : currentWeather ? (
         <CurrentWeatherCard data={currentWeather} />
       ) : null}
@@ -169,9 +194,34 @@ export default function Weather({ params }: WeatherProps) {
       {isForecastLoading ? (
         <LoadingState message="Loading forecast data..." />
       ) : isForecastError ? (
-        <ErrorState 
-          message={`Error loading forecast data: ${forecastError instanceof Error ? forecastError.message : 'Unknown error'}`}
-        />
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+          <div className="flex items-start">
+            <div className="flex-shrink-0 text-red-500">
+              <span className="material-icons">error</span>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-800">Error Loading Forecast</h3>
+              <div className="mt-2 text-sm text-red-700">
+                <p>
+                  {forecastError instanceof Error && forecastError.message.includes('Rate limited')
+                    ? 'Forecast API rate limit reached. Please try again in a few moments.'
+                    : 'There was an error loading the forecast data. Please try refreshing.'}
+                </p>
+              </div>
+              {!(forecastError instanceof Error && forecastError.message.includes('Rate limited')) && (
+                <div className="mt-4">
+                  <Button
+                    onClick={() => window.location.reload()}
+                    size="sm"
+                    variant="destructive"
+                  >
+                    Try Again
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       ) : dailyForecast.length > 0 ? (
         <ForecastSection forecast={dailyForecast} />
       ) : null}

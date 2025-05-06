@@ -58,7 +58,7 @@ export default function CityInfo({ city }: CityInfoProps) {
           </div>
           <div>
             <div className="text-sm text-neutral-400">Coordinates</div>
-            <div className="font-medium">{formatCoordinates(city.coordinates.lat, city.coordinates.lon)}</div>
+            <div className="font-medium">{formatCoordinates(parseFloat(city.coordinates.lat), parseFloat(city.coordinates.lon))}</div>
           </div>
         </div>
       </div>

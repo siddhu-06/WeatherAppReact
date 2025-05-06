@@ -33,10 +33,19 @@ export function getLocalTime(timezone: string): string {
   }
 }
 
-export function formatCoordinates(lat: number, lon: number): string {
-  const latDir = lat >= 0 ? "N" : "S";
-  const lonDir = lon >= 0 ? "E" : "W";
-  return `${Math.abs(lat).toFixed(4)}° ${latDir}, ${Math.abs(lon).toFixed(4)}° ${lonDir}`;
+export function formatCoordinates(lat: number | string, lon: number | string): string {
+  // Convert to numbers if they're strings
+  const numLat = typeof lat === 'string' ? parseFloat(lat) : lat;
+  const numLon = typeof lon === 'string' ? parseFloat(lon) : lon;
+  
+  // Check if conversion resulted in valid numbers
+  if (isNaN(numLat) || isNaN(numLon)) {
+    return 'Invalid coordinates';
+  }
+  
+  const latDir = numLat >= 0 ? "N" : "S";
+  const lonDir = numLon >= 0 ? "E" : "W";
+  return `${Math.abs(numLat).toFixed(4)}° ${latDir}, ${Math.abs(numLon).toFixed(4)}° ${lonDir}`;
 }
 
 export function cityToSearchParam(city: City): string {

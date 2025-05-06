@@ -55,19 +55,22 @@ export default function Weather({ params }: WeatherProps) {
   
   // Store viewed city data in context when we have both city and weather data
   useEffect(() => {
-    if (city && currentWeather) {
+    if (city && currentWeather && currentWeather.main && currentWeather.weather) {
       // Create a weather summary for the city table
       const weatherSummary = {
-        temp_max: currentWeather.main?.temp_max,
-        temp_min: currentWeather.main?.temp_min,
-        icon: currentWeather.weather?.[0]?.icon
+        temp_max: currentWeather.main.temp_max,
+        temp_min: currentWeather.main.temp_min,
+        icon: currentWeather.weather[0]?.icon || ""
+      };
+      
+      // Create a proper City object with weather data
+      const cityWithWeather = {
+        ...city,
+        weather: weatherSummary
       };
       
       // Add to viewed cities
-      addViewedCity({
-        ...city,
-        weather: weatherSummary
-      });
+      addViewedCity(cityWithWeather);
     }
   }, [city, currentWeather, addViewedCity]);
   

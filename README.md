@@ -71,7 +71,7 @@ http://localhost:5173
   Sooonn....!!!
 
 ## 🌍 Live Demo
-  Coming soon...
+  (https://zephyracast.netlify.app/)
 
 ## 🤝 Contributing
 Contributions are welcome! If you’d like to improve the app, fix a bug, or suggest a feature:

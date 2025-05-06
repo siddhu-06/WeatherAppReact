@@ -33,7 +33,7 @@ export function useCitiesSearch(params: CitySearchParams) {
 }
 
 export function useCity(cityName: string) {
-  return useQuery({
+  return useQuery<City>({
     queryKey: [`/api/cities/${encodeURIComponent(cityName)}`],
     enabled: !!cityName,
     staleTime: 60 * 60 * 1000, // 1 hour

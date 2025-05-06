@@ -25,7 +25,7 @@ export default function Weather({ params }: WeatherProps) {
   
   // Fetch city data
   const { 
-    data: city = {} as City, 
+    data: city, 
     isLoading: isCityLoading, 
     isError: isCityError, 
     error: cityError 

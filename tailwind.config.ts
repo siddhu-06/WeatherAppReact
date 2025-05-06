@@ -83,6 +83,35 @@ export default {
           '0%, 100%': { transform: 'translateX(0)' },
           '50%': { transform: 'translateX(10%)' }
         },
+        float: {
+          '0%, 100%': { transform: 'translateY(0) scale(1)' },
+          '50%': { transform: 'translateY(-5%) scale(1.02)' }
+        },
+        'float-reverse': {
+          '0%, 100%': { transform: 'translateY(0) scale(1)' },
+          '50%': { transform: 'translateY(5%) scale(0.98)' }
+        },
+        'spin-slow': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' }
+        },
+        rain: {
+          '0%': { transform: 'translateY(0)' },
+          '80%, 100%': { transform: 'translateY(150%)' }
+        },
+        snow: {
+          '0%': { transform: 'translateY(0) rotate(0deg)' },
+          '100%': { transform: 'translateY(150%) rotate(20deg)' }
+        },
+        flash: {
+          '0%, 50%, 100%': { opacity: '0' },
+          '25%, 75%': { opacity: '1' }
+        },
+        fog: {
+          '0%': { transform: 'translateX(-30%)', opacity: '0.8' },
+          '50%': { transform: 'translateX(30%)', opacity: '1' },
+          '100%': { transform: 'translateX(-30%)', opacity: '0.8' }
+        },
         sunRay: {
           '0%, 100%': { opacity: '0.6', transform: 'scale(1)' },
           '50%': { opacity: '1', transform: 'scale(1.1)' }
@@ -116,6 +145,14 @@ export default {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'float-slow': 'float 6s ease-in-out infinite',
+        'float-slow-reverse': 'float-reverse 7s ease-in-out infinite',
+        'spin-very-slow': 'spin-slow 20s linear infinite',
+        'rain': 'rain 1.5s ease-in infinite',
+        'snow': 'snow 4s ease-in infinite',
+        'flash': 'flash 2s ease-out infinite',
+        'fog': 'fog 8s ease-in-out infinite',
         'drift-slow': 'drift 8s ease-in-out infinite',
         'sun-ray': 'sunRay 3s ease-in-out infinite',
         'glow-soft': 'glow 4s ease-in-out infinite',

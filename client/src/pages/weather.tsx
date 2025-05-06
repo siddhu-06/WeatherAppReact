@@ -3,6 +3,7 @@ import { useLocation, Link } from "wouter";
 import { useCurrentWeather, useForecast } from "@/hooks/useWeather";
 import { useCity } from "@/hooks/useCity";
 import { useWeatherContext } from "@/context/WeatherContext";
+import { City } from "@/types/city";
 import { Button } from "@/components/ui/button";
 import CurrentWeatherCard from "@/components/weather/CurrentWeather";
 import ForecastSection from "@/components/weather/ForecastSection";
@@ -24,7 +25,7 @@ export default function Weather({ params }: WeatherProps) {
   
   // Fetch city data
   const { 
-    data: city, 
+    data: city = {} as City, 
     isLoading: isCityLoading, 
     isError: isCityError, 
     error: cityError 
@@ -55,24 +56,40 @@ export default function Weather({ params }: WeatherProps) {
   
   // Store viewed city data in context when we have both city and weather data
   useEffect(() => {
-    if (city && currentWeather && currentWeather.main && currentWeather.weather) {
-      // Create a weather summary for the city table
+    if (city && 
+        city.id && 
+        currentWeather && 
+        currentWeather.main && 
+        currentWeather.weather && 
+        currentWeather.weather.length > 0) {
+      
+      // Use refs to prevent unnecessary re-renders
       const weatherSummary = {
         temp_max: currentWeather.main.temp_max,
         temp_min: currentWeather.main.temp_min,
-        icon: currentWeather.weather[0]?.icon || ""
+        icon: currentWeather.weather[0].icon || ""
       };
       
-      // Create a proper City object with weather data
+      // Create a new object with the weather data, ensuring all required fields are included
       const cityWithWeather = {
-        ...city,
-        weather: weatherSummary
+        id: city.id,
+        name: city.name,
+        ascii_name: city.ascii_name,
+        country_code: city.country_code,
+        cou_name_en: city.cou_name_en,
+        population: city.population,
+        timezone: city.timezone,
+        coordinates: city.coordinates,
+        weather: weatherSummary,
+        // Include any other optional properties
+        alternate_names: city.alternate_names
       };
       
-      // Add to viewed cities
+      // Add to viewed cities (this will only run when the data changes significantly)
       addViewedCity(cityWithWeather);
     }
-  }, [city, currentWeather, addViewedCity]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [city?.id, currentWeather?.dt, addViewedCity]);
   
   // Handle loading states
   if (isCityLoading) {
@@ -90,10 +107,10 @@ export default function Weather({ params }: WeatherProps) {
   }
   
   // If we don't have city data
-  if (!city) {
+  if (!city || !city.id || !city.coordinates) {
     return (
       <ErrorState 
-        message="City not found. Please try another search."
+        message="City not found or missing data. Please try another search."
         onRetry={() => navigate("/")}
       />
     );

@@ -140,20 +140,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(400).json({ message: 'Invalid coordinates: could not parse as numbers' });
         }
         
-        const weather = await getCurrentWeather(
-          parsedLat, 
-          parsedLon, 
-          units as 'metric' | 'imperial'
-        );
-        
-        res.json(weather);
+        try {
+          const weather = await getCurrentWeather(
+            parsedLat, 
+            parsedLon, 
+            units as 'metric' | 'imperial'
+          );
+          
+          res.json(weather);
+        } catch (apiError: any) {
+          console.error('API Error:', apiError);
+          
+          // If it's a rate limit error, send a 429 response
+          if (apiError.message && apiError.message.includes('429')) {
+            return res.status(429).json({ 
+              message: 'Too many requests to weather API. Please try again later.',
+              retryAfter: 60
+            });
+          }
+          
+          // Send a generic 500 error for other API issues
+          return res.status(500).json({ 
+            message: 'Error fetching weather data from external API',
+            details: apiError.message || 'Unknown error'
+          });
+        }
       } catch (parseError) {
-        console.error('Error parsing coordinates:', parseError);
-        return res.status(400).json({ message: 'Invalid coordinates format' });
+        console.error('Error processing request:', parseError);
+        return res.status(400).json({ message: 'Invalid request format' });
       }
     } catch (error) {
       console.error('Error fetching current weather:', error);
-      res.status(500).json({ message: 'Error fetching current weather' });
+      res.status(500).json({ message: 'Internal server error' });
     }
   });
 
@@ -173,20 +191,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(400).json({ message: 'Invalid coordinates: could not parse as numbers' });
         }
         
-        const forecast = await getForecast(
-          parsedLat, 
-          parsedLon, 
-          units as 'metric' | 'imperial'
-        );
-        
-        res.json(forecast);
+        try {
+          const forecast = await getForecast(
+            parsedLat, 
+            parsedLon, 
+            units as 'metric' | 'imperial'
+          );
+          
+          res.json(forecast);
+        } catch (apiError: any) {
+          console.error('API Error:', apiError);
+          
+          // If it's a rate limit error, send a 429 response
+          if (apiError.message && apiError.message.includes('429')) {
+            return res.status(429).json({ 
+              message: 'Too many requests to weather API. Please try again later.',
+              retryAfter: 60
+            });
+          }
+          
+          // Send a generic 500 error for other API issues
+          return res.status(500).json({ 
+            message: 'Error fetching forecast data from external API',
+            details: apiError.message || 'Unknown error'
+          });
+        }
       } catch (parseError) {
-        console.error('Error parsing coordinates:', parseError);
-        return res.status(400).json({ message: 'Invalid coordinates format' });
+        console.error('Error processing request:', parseError);
+        return res.status(400).json({ message: 'Invalid request format' });
       }
     } catch (error) {
       console.error('Error fetching forecast:', error);
-      res.status(500).json({ message: 'Error fetching forecast' });
+      res.status(500).json({ message: 'Internal server error' });
     }
   });
 

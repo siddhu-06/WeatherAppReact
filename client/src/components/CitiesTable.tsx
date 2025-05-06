@@ -68,45 +68,17 @@ export default function CitiesTable({ searchParams }: CitiesTableProps) {
         <table className="min-w-full divide-y divide-neutral-200">
           <thead className="bg-neutral-100 sticky top-0 z-10">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider sortable cursor-pointer">
-                <div className="flex items-center">
-                  City Name
-                  <span className="material-icons ml-1 text-sm">
-                    {searchParams.sort === 'name' 
-                      ? (searchParams.sortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') 
-                      : 'unfold_more'}
-                  </span>
-                </div>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider">
+                City Name
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider sortable cursor-pointer">
-                <div className="flex items-center">
-                  Country
-                  <span className="material-icons ml-1 text-sm">
-                    {searchParams.sort === 'country_code' 
-                      ? (searchParams.sortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') 
-                      : 'unfold_more'}
-                  </span>
-                </div>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider">
+                Country
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider sortable cursor-pointer">
-                <div className="flex items-center">
-                  Population
-                  <span className="material-icons ml-1 text-sm">
-                    {searchParams.sort === 'population' 
-                      ? (searchParams.sortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') 
-                      : 'unfold_more'}
-                  </span>
-                </div>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider">
+                Population
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider sortable cursor-pointer">
-                <div className="flex items-center">
-                  Timezone
-                  <span className="material-icons ml-1 text-sm">
-                    {searchParams.sort === 'timezone' 
-                      ? (searchParams.sortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') 
-                      : 'unfold_more'}
-                  </span>
-                </div>
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider">
+                Timezone
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider">
                 Weather

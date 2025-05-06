@@ -77,7 +77,7 @@ export default function Home() {
       </div>
       
       <CitiesTable 
-        searchParams={searchParams} 
+        searchParams={searchParams}
       />
     </div>
   );

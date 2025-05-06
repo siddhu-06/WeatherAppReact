@@ -74,25 +74,60 @@ export default function SearchBar({ onSearch, onFilterToggle }: SearchBarProps) 
                 description: `Showing weather for ${city.name}`,
               });
             } else {
+              // Show a more helpful error message with additional guidance
               toast({
                 title: "Location Error",
-                description: "Couldn't find a city near your location.",
-                variant: "destructive"
+                description: (
+                  <div className="flex flex-col gap-2">
+                    <p>Couldn't find a city near your location.</p>
+                    <p className="text-xs">Try these options:</p>
+                    <ul className="text-xs list-disc pl-4">
+                      <li>Search for a city by name</li>
+                      <li>Try moving to a more populated area</li>
+                      <li>Check your connection and try again</li>
+                    </ul>
+                  </div>
+                ),
+                variant: "destructive",
+                duration: 8000 // Show for longer
               });
             }
           } catch (error) {
             toast({
               title: "Location Error",
-              description: "Error finding city near your location.",
-              variant: "destructive"
+              description: (
+                <div className="flex flex-col gap-2">
+                  <p>Error finding city near your location.</p>
+                  <p className="text-xs">This could be due to:</p>
+                  <ul className="text-xs list-disc pl-4">
+                    <li>Network connection issues</li>
+                    <li>Server API limitations</li>
+                    <li>Temporary service unavailability</li>
+                  </ul>
+                  <p className="text-xs mt-1">Please try again later or search manually.</p>
+                </div>
+              ),
+              variant: "destructive",
+              duration: 8000
             });
           }
         },
         (error) => {
           toast({
             title: "Geolocation Error",
-            description: "Couldn't access your location. Please check permissions.",
-            variant: "destructive"
+            description: (
+              <div className="flex flex-col gap-2">
+                <p>Couldn't access your location.</p>
+                <p className="text-xs">To fix this:</p>
+                <ul className="text-xs list-disc pl-4">
+                  <li>Check your browser location permissions</li>
+                  <li>Allow location access for this site</li>
+                  <li>Try refreshing the page</li>
+                </ul>
+              </div>
+            ),
+            variant: "destructive",
+            duration: 8000
           });
         }
       );

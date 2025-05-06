@@ -1,6 +1,7 @@
 import { useWeatherContext } from "@/context/WeatherContext";
 import { CurrentWeather as CurrentWeatherType } from "@/types/weather";
 import { getWeatherIcon, getWeatherBackground, formatTemperature, formatTime } from "@/lib/weatherUtils";
+import AnimatedWeatherIcon from "./AnimatedWeatherIcon";
 
 interface CurrentWeatherCardProps {
   data: CurrentWeatherType;
@@ -30,7 +31,15 @@ export default function CurrentWeatherCard({ data }: CurrentWeatherCardProps) {
       <div className={`${backgroundClass} p-6 text-white`}>
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
           <div className="flex items-center mb-4 md:mb-0">
-            <span className="material-icons weather-icon">{weatherIcon}</span>
+            {data.weather?.[0]?.icon ? (
+              <AnimatedWeatherIcon 
+                iconCode={data.weather[0].icon} 
+                size="lg" 
+                className="mr-2"
+              />
+            ) : (
+              <span className="material-icons weather-icon text-4xl">{weatherIcon}</span>
+            )}
             <div className="ml-4">
               <div className="text-4xl font-semibold font-mono">
                 {formatTemperature(data.main.temp, unit)}

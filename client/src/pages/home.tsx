@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SearchBar from "@/components/SearchBar";
 import FilterPanel from "@/components/FilterPanel";
 import CitiesTable from "@/components/CitiesTable";
@@ -48,6 +48,19 @@ export default function Home() {
       setSortDirection("asc");
     }
   };
+  
+  // Listen for sort events from the table component
+  useEffect(() => {
+    const handleSortEvent = (e: CustomEvent) => {
+      const { field } = e.detail;
+      handleSort(field);
+    };
+    
+    window.addEventListener('sort-table', handleSortEvent as EventListener);
+    return () => {
+      window.removeEventListener('sort-table', handleSortEvent as EventListener);
+    };
+  }, [sortField, sortDirection]);
 
   const searchParams: CitySearchParams = {
     query: searchQuery,

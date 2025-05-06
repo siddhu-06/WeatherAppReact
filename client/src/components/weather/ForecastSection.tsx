@@ -1,6 +1,7 @@
 import { DailyForecast } from "@/types/weather";
 import { useWeatherContext } from "@/context/WeatherContext";
 import { getWeatherIcon, formatTemperature, formatDate } from "@/lib/weatherUtils";
+import AnimatedWeatherIcon from "./AnimatedWeatherIcon";
 
 interface ForecastSectionProps {
   forecast: DailyForecast[];
@@ -17,7 +18,11 @@ export default function ForecastSection({ forecast }: ForecastSectionProps) {
           <div key={index} className="bg-neutral-100 p-4 rounded-lg">
             <div className="text-center mb-2 font-medium">{formatDate(new Date(day.date).getTime() / 1000)}</div>
             <div className="flex justify-center mb-3">
-              <span className="material-icons text-weather-clear">{getWeatherIcon(day.icon)}</span>
+              <AnimatedWeatherIcon 
+                iconCode={day.icon} 
+                size="md" 
+                className="mx-auto"
+              />
             </div>
             <div className="text-center mb-2 font-mono">
               <span className="text-lg font-medium">{formatTemperature(day.temp_max, unit)}</span>

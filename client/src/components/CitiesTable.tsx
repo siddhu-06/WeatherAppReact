@@ -8,6 +8,7 @@ import { formatPopulation, formatTimezone } from "@/lib/cityUtils";
 import { formatTemperature } from "@/lib/weatherUtils";
 import LoadingState from "./LoadingState";
 import ErrorState from "./ErrorState";
+import AnimatedWeatherIcon from "./weather/AnimatedWeatherIcon";
 
 interface CitiesTableProps {
   searchParams: CitySearchParams;
@@ -28,6 +29,14 @@ export default function CitiesTable({ searchParams }: CitiesTableProps) {
     isFetchingNextPage,
     refetch
   } = useCitiesSearch(searchParams);
+  
+  // Function to handle sorting when clicking on table headers
+  const handleSort = (field: string) => {
+    const event = new CustomEvent('sort-table', { 
+      detail: { field } 
+    });
+    window.dispatchEvent(event);
+  };
   
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
@@ -60,7 +69,11 @@ export default function CitiesTable({ searchParams }: CitiesTableProps) {
   }
   
   // Get all cities from all pages
-  const cities: City[] = data?.pages.flatMap(page => page.cities) || [];
+  const cities: City[] = data?.pages.flatMap(page => {
+    // Type assertion to ensure page has the expected structure
+    const typedPage = page as { cities: City[] };
+    return typedPage.cities;
+  }) || [];
   
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -68,17 +81,45 @@ export default function CitiesTable({ searchParams }: CitiesTableProps) {
         <table className="min-w-full divide-y divide-neutral-200">
           <thead className="bg-neutral-100 sticky top-0 z-10">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider">
-                City Name
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider cursor-pointer">
+                <div className="flex items-center" onClick={() => handleSort('name')}>
+                  City Name
+                  <span className="material-icons ml-1 text-sm">
+                    {searchParams.sort === 'name' 
+                      ? (searchParams.sortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') 
+                      : 'unfold_more'}
+                  </span>
+                </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider">
-                Country
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider cursor-pointer">
+                <div className="flex items-center" onClick={() => handleSort('country_code')}>
+                  Country
+                  <span className="material-icons ml-1 text-sm">
+                    {searchParams.sort === 'country_code' 
+                      ? (searchParams.sortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') 
+                      : 'unfold_more'}
+                  </span>
+                </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider">
-                Population
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider cursor-pointer">
+                <div className="flex items-center" onClick={() => handleSort('population')}>
+                  Population
+                  <span className="material-icons ml-1 text-sm">
+                    {searchParams.sort === 'population' 
+                      ? (searchParams.sortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') 
+                      : 'unfold_more'}
+                  </span>
+                </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider">
-                Timezone
+              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider cursor-pointer">
+                <div className="flex items-center" onClick={() => handleSort('timezone')}>
+                  Timezone
+                  <span className="material-icons ml-1 text-sm">
+                    {searchParams.sort === 'timezone' 
+                      ? (searchParams.sortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') 
+                      : 'unfold_more'}
+                  </span>
+                </div>
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider">
                 Weather
@@ -109,9 +150,11 @@ export default function CitiesTable({ searchParams }: CitiesTableProps) {
                   {city.weather ? (
                     <div className="text-sm text-neutral-700 flex items-center">
                       {city.weather.icon && (
-                        <span className="material-icons text-secondary mr-1">
-                          {city.weather.icon}
-                        </span>
+                        <AnimatedWeatherIcon 
+                          iconCode={city.weather.icon}
+                          size="sm"
+                          className="mr-2"
+                        />
                       )}
                       <span>
                         {city.weather.temp_max !== undefined && city.weather.temp_min !== undefined ? (

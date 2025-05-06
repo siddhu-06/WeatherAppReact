@@ -79,10 +79,55 @@ export default {
             height: "0",
           },
         },
+        drift: {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '50%': { transform: 'translateX(10%)' }
+        },
+        sunRay: {
+          '0%, 100%': { opacity: '0.6', transform: 'scale(1)' },
+          '50%': { opacity: '1', transform: 'scale(1.1)' }
+        },
+        glow: {
+          '0%, 100%': { opacity: '0.8', transform: 'scale(1)' },
+          '50%': { opacity: '1', transform: 'scale(1.05)' }
+        },
+        rainDrop: {
+          '0%': { transform: 'translateY(0)', opacity: '1' },
+          '100%': { transform: 'translateY(200%)', opacity: '0' }
+        },
+        snowFall: {
+          '0%': { transform: 'translateY(0) translateX(0)', opacity: '1' },
+          '70%': { opacity: '1' },
+          '100%': { transform: 'translateY(200%) translateX(20px)', opacity: '0' }
+        },
+        lightningFlash: {
+          '0%, 100%': { opacity: '0' },
+          '10%, 30%': { opacity: '1' },
+          '20%, 40%, 60%': { opacity: '0' },
+          '50%': { opacity: '1' }
+        },
+        fogDrift: {
+          '0%': { transform: 'translateX(-10%)' },
+          '50%': { transform: 'translateX(10%)' },
+          '100%': { transform: 'translateX(-10%)' }
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'drift-slow': 'drift 8s ease-in-out infinite',
+        'sun-ray': 'sunRay 3s ease-in-out infinite',
+        'glow-soft': 'glow 4s ease-in-out infinite',
+        'rain-drop-1': 'rainDrop 1.5s linear infinite',
+        'rain-drop-2': 'rainDrop 1.5s 0.3s linear infinite',
+        'rain-drop-3': 'rainDrop 1.5s 0.6s linear infinite',
+        'snow-fall-1': 'snowFall 5s linear infinite',
+        'snow-fall-2': 'snowFall 5s 1s linear infinite',
+        'snow-fall-3': 'snowFall 5s 2s linear infinite',
+        'lightning-flash': 'lightningFlash 3s ease-in-out infinite',
+        'fog-drift-1': 'fogDrift 10s ease-in-out infinite',
+        'fog-drift-2': 'fogDrift 15s 2s ease-in-out infinite'
       },
     },
   },

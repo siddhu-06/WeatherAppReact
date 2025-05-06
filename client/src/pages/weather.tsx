@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useLocation, Link } from "wouter";
 import { useCurrentWeather, useForecast } from "@/hooks/useWeather";
 import { useCity } from "@/hooks/useCity";
@@ -54,42 +54,53 @@ export default function Weather({ params }: WeatherProps) {
     city?.coordinates?.lon || ""
   );
   
+  // Use a ref to track whether we've already added this city to viewed cities
+  const processedCityRef = useRef<string | null>(null);
+  
   // Store viewed city data in context when we have both city and weather data
   useEffect(() => {
-    if (city && 
-        city.id && 
-        currentWeather && 
-        currentWeather.main && 
-        currentWeather.weather && 
-        currentWeather.weather.length > 0) {
+    // Only proceed if we have all the data we need
+    if (!city?.id || !currentWeather?.main || !currentWeather?.weather?.[0]) {
+      return;
+    }
+    
+    // Create a unique identifier for this city+weather combination
+    const cityWeatherId = `${city.id}-${currentWeather.dt}`;
+    
+    // Only add to viewed cities if we haven't processed this combination yet
+    if (processedCityRef.current !== cityWeatherId) {
+      processedCityRef.current = cityWeatherId;
       
-      // Use refs to prevent unnecessary re-renders
+      // Create the weather summary to store with the city
       const weatherSummary = {
         temp_max: currentWeather.main.temp_max,
         temp_min: currentWeather.main.temp_min,
-        icon: currentWeather.weather[0].icon || ""
+        icon: currentWeather.weather[0].icon
       };
       
-      // Create a new object with the weather data, ensuring all required fields are included
-      const cityWithWeather = {
-        id: city.id,
-        name: city.name,
-        ascii_name: city.ascii_name,
-        country_code: city.country_code,
-        cou_name_en: city.cou_name_en,
-        population: city.population,
-        timezone: city.timezone,
-        coordinates: city.coordinates,
-        weather: weatherSummary,
-        // Include any other optional properties
-        alternate_names: city.alternate_names
-      };
-      
-      // Add to viewed cities (this will only run when the data changes significantly)
-      addViewedCity(cityWithWeather);
+      // Process this city only once with a timeout to avoid re-renders
+      setTimeout(() => {
+        const cityWithWeather: City = {
+          id: city.id,
+          name: city.name,
+          ascii_name: city.ascii_name,
+          country_code: city.country_code,
+          cou_name_en: city.cou_name_en,
+          population: city.population,
+          timezone: city.timezone,
+          coordinates: { ...city.coordinates },
+          weather: weatherSummary,
+          alternate_names: city.alternate_names || []
+        };
+        
+        addViewedCity(cityWithWeather);
+      }, 0);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [city?.id, currentWeather?.dt, addViewedCity]);
+  }, [
+    // Use the minimum dependencies needed
+    currentWeather?.dt
+  ]);
   
   // Handle loading states
   if (isCityLoading) {

@@ -8,6 +8,19 @@ export function useCurrentWeather(lat: string, lon: string) {
   
   return useQuery<CurrentWeather>({
     queryKey: ['/api/weather/current', lat, lon, unit],
+    queryFn: async () => {
+      if (!lat || !lon) {
+        throw new Error('Missing coordinates');
+      }
+      console.log('Requesting weather with coordinates:', { lat, lon, unit });
+      const url = `/api/weather/current?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&units=${unit}`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch weather data');
+      }
+      return response.json();
+    },
     enabled: !!lat && !!lon,
     staleTime: 30 * 60 * 1000, // 30 minutes
   });
@@ -18,6 +31,19 @@ export function useForecast(lat: string, lon: string) {
   
   const forecastQuery = useQuery<ForecastResponse>({
     queryKey: ['/api/weather/forecast', lat, lon, unit],
+    queryFn: async () => {
+      if (!lat || !lon) {
+        throw new Error('Missing coordinates');
+      }
+      console.log('Requesting forecast with coordinates:', { lat, lon, unit });
+      const url = `/api/weather/forecast?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&units=${unit}`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch forecast data');
+      }
+      return response.json();
+    },
     enabled: !!lat && !!lon,
     staleTime: 30 * 60 * 1000, // 30 minutes
   });

@@ -41,12 +41,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/cities/:name', async (req, res) => {
     try {
       const { name } = req.params;
-      const city = await getCityByName(decodeURIComponent(name));
+      const decodedName = decodeURIComponent(name);
+      console.log('Fetching city with name:', decodedName);
+      
+      const city = await getCityByName(decodedName);
       
       if (!city) {
+        console.log('City not found with name:', decodedName);
         return res.status(404).json({ message: 'City not found' });
       }
       
+      console.log('City found:', city.name, 'Coordinates:', city.coordinates);
       res.json(city);
     } catch (error) {
       console.error('Error fetching city:', error);
@@ -118,16 +123,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/weather/current', async (req, res) => {
     try {
       const { lat, lon, units = 'metric' } = req.query;
+      console.log('Weather request received with coordinates:', { lat, lon, units });
       
       if (typeof lat !== 'string' || typeof lon !== 'string' || !lat || !lon) {
+        console.log('Invalid coordinates: missing or wrong type', { lat, lon });
         return res.status(400).json({ message: 'Invalid coordinates' });
       }
       
       try {
         const parsedLat = parseFloat(lat);
         const parsedLon = parseFloat(lon);
+        console.log('Parsed coordinates:', { parsedLat, parsedLon });
         
         if (isNaN(parsedLat) || isNaN(parsedLon)) {
+          console.log('Invalid coordinates: parsed as NaN', { lat, lon });
           return res.status(400).json({ message: 'Invalid coordinates: could not parse as numbers' });
         }
         
@@ -152,17 +161,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { lat, lon, units = 'metric' } = req.query;
       
-      if (typeof lat !== 'string' || typeof lon !== 'string') {
+      if (typeof lat !== 'string' || typeof lon !== 'string' || !lat || !lon) {
         return res.status(400).json({ message: 'Invalid coordinates' });
       }
       
-      const forecast = await getForecast(
-        parseFloat(lat), 
-        parseFloat(lon), 
-        units as 'metric' | 'imperial'
-      );
-      
-      res.json(forecast);
+      try {
+        const parsedLat = parseFloat(lat);
+        const parsedLon = parseFloat(lon);
+        
+        if (isNaN(parsedLat) || isNaN(parsedLon)) {
+          return res.status(400).json({ message: 'Invalid coordinates: could not parse as numbers' });
+        }
+        
+        const forecast = await getForecast(
+          parsedLat, 
+          parsedLon, 
+          units as 'metric' | 'imperial'
+        );
+        
+        res.json(forecast);
+      } catch (parseError) {
+        console.error('Error parsing coordinates:', parseError);
+        return res.status(400).json({ message: 'Invalid coordinates format' });
+      }
     } catch (error) {
       console.error('Error fetching forecast:', error);
       res.status(500).json({ message: 'Error fetching forecast' });

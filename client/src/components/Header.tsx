@@ -36,8 +36,8 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <div className="flex items-center">
           <span className="material-icons mr-2">wb_sunny</span>
-          <Link href="/">
-            <a className="text-xl font-semibold">Weather Forecast</a>
+          <Link href="/" className="text-xl font-semibold">
+            Weather Forecast
           </Link>
         </div>
         
@@ -64,8 +64,8 @@ export default function Header() {
                 {favorites.length > 0 ? (
                   favorites.map(cityId => (
                     <DropdownMenuItem key={cityId}>
-                      <Link href={`/weather/${cityId}`}>
-                        <a className="w-full">{cityId}</a>
+                      <Link href={`/weather/${cityId}`} className="w-full">
+                        {cityId}
                       </Link>
                     </DropdownMenuItem>
                   ))
@@ -123,8 +123,8 @@ export default function Header() {
                     {favorites.length > 0 ? (
                       <div className="space-y-2">
                         {favorites.map(cityId => (
-                          <Link key={cityId} href={`/weather/${cityId}`}>
-                            <a className="block px-2 py-1 hover:bg-gray-100 rounded">{cityId}</a>
+                          <Link key={cityId} href={`/weather/${cityId}`} className="block px-2 py-1 hover:bg-gray-100 rounded">
+                            {cityId}
                           </Link>
                         ))}
                       </div>

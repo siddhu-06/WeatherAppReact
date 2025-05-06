@@ -13,8 +13,8 @@ export default function Footer() {
             <p className="text-sm text-neutral-300 mt-1">Get accurate weather forecasts for cities worldwide</p>
           </div>
           <div className="flex flex-col md:flex-row md:space-x-6 space-y-2 md:space-y-0">
-            <Link href="/">
-              <a className="text-neutral-300 hover:text-white">Home</a>
+            <Link href="/" className="text-neutral-300 hover:text-white">
+              Home
             </Link>
             <a href="#" className="text-neutral-300 hover:text-white">Privacy Policy</a>
             <a href="#" className="text-neutral-300 hover:text-white">Terms of Service</a>

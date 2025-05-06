@@ -37,8 +37,8 @@ export default function Weather({ params }: WeatherProps) {
     isError: isCurrentError,
     error: currentError
   } = useCurrentWeather(
-    city?.coordinates?.lat || 0, 
-    city?.coordinates?.lon || 0
+    city?.coordinates ? Number(city.coordinates.lat) : 0, 
+    city?.coordinates ? Number(city.coordinates.lon) : 0
   );
   
   // Fetch forecast data
@@ -49,8 +49,8 @@ export default function Weather({ params }: WeatherProps) {
     isError: isForecastError,
     error: forecastError
   } = useForecast(
-    city?.coordinates?.lat || 0, 
-    city?.coordinates?.lon || 0
+    city?.coordinates ? Number(city.coordinates.lat) : 0, 
+    city?.coordinates ? Number(city.coordinates.lon) : 0
   );
   
   // Store viewed city data in context when we have both city and weather data
@@ -100,11 +100,9 @@ export default function Weather({ params }: WeatherProps) {
     <div id="weather-view" className="weather-view fade-in">
       {/* Back Navigation */}
       <div className="mb-4">
-        <Link href="/">
-          <a className="flex items-center text-primary hover:text-primary/80 transition">
-            <span className="material-icons">arrow_back</span>
-            <span className="ml-1">Back to Cities</span>
-          </a>
+        <Link href="/" className="flex items-center text-primary hover:text-primary/80 transition">
+          <span className="material-icons">arrow_back</span>
+          <span className="ml-1">Back to Cities</span>
         </Link>
       </div>
       

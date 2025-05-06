@@ -15,25 +15,25 @@ interface FilterPanelProps {
 }
 
 export default function FilterPanel({ isOpen, onFilter, onReset }: FilterPanelProps) {
-  const [countryCode, setCountryCode] = useState("");
-  const [populationMin, setPopulationMin] = useState<string>("");
-  const [timezone, setTimezone] = useState("");
+  const [countryCode, setCountryCode] = useState("all_countries");
+  const [populationMin, setPopulationMin] = useState<string>("any_population");
+  const [timezone, setTimezone] = useState("all_timezones");
   
   const { data: countries = [] } = useCountries();
   const { data: timezones = [] } = useTimezones();
   
   const handleApplyFilters = () => {
     onFilter({
-      countryCode,
-      populationMin: populationMin ? parseInt(populationMin) : null,
-      timezone,
+      countryCode: countryCode === 'all_countries' ? '' : countryCode,
+      populationMin: populationMin === 'any_population' ? null : parseInt(populationMin),
+      timezone: timezone === 'all_timezones' ? '' : timezone,
     });
   };
   
   const handleResetFilters = () => {
-    setCountryCode("");
-    setPopulationMin("");
-    setTimezone("");
+    setCountryCode("all_countries");
+    setPopulationMin("any_population");
+    setTimezone("all_timezones");
     onReset();
   };
   
@@ -49,7 +49,7 @@ export default function FilterPanel({ isOpen, onFilter, onReset }: FilterPanelPr
               <SelectValue placeholder="All Countries" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Countries</SelectItem>
+              <SelectItem value="all_countries">All Countries</SelectItem>
               {countries.map(country => (
                 <SelectItem key={country.code} value={country.code}>
                   {country.name}
@@ -66,7 +66,7 @@ export default function FilterPanel({ isOpen, onFilter, onReset }: FilterPanelPr
               <SelectValue placeholder="Any" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Any</SelectItem>
+              <SelectItem value="any_population">Any</SelectItem>
               <SelectItem value="1000000">Above 1,000,000</SelectItem>
               <SelectItem value="500000">Above 500,000</SelectItem>
               <SelectItem value="100000">Above 100,000</SelectItem>
@@ -82,7 +82,7 @@ export default function FilterPanel({ isOpen, onFilter, onReset }: FilterPanelPr
               <SelectValue placeholder="All Timezones" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Timezones</SelectItem>
+              <SelectItem value="all_timezones">All Timezones</SelectItem>
               {timezones.map(tz => (
                 <SelectItem key={tz} value={tz}>
                   {tz.replace('_', ' ')}

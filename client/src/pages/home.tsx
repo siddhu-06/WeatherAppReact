@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import SearchBar from "@/components/SearchBar";
 import FilterPanel from "@/components/FilterPanel";
 import CitiesTable from "@/components/CitiesTable";
+import LocationErrorModal from "@/components/LocationErrorModal";
 import { CitySearchParams } from "@/types/city";
 
 export default function Home() {
@@ -9,6 +10,7 @@ export default function Home() {
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [sortField, setSortField] = useState<string>("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [showLocationError, setShowLocationError] = useState(false);
   const [filters, setFilters] = useState({
     countryCode: "",
     populationMin: null as number | null,
@@ -61,6 +63,18 @@ export default function Home() {
       window.removeEventListener('sort-table', handleSortEvent as EventListener);
     };
   }, [sortField, sortDirection]);
+  
+  // Listen for location error events
+  useEffect(() => {
+    const handleLocationError = () => {
+      setShowLocationError(true);
+    };
+    
+    window.addEventListener('location-error', handleLocationError);
+    return () => {
+      window.removeEventListener('location-error', handleLocationError);
+    };
+  }, []);
 
   const searchParams: CitySearchParams = {
     query: searchQuery,
@@ -92,6 +106,13 @@ export default function Home() {
       <CitiesTable 
         searchParams={searchParams}
       />
+      
+      {/* Location Error Modal */}
+      {showLocationError && (
+        <LocationErrorModal 
+          onClose={() => setShowLocationError(false)} 
+        />
+      )}
     </div>
   );
 }

@@ -74,22 +74,15 @@ export default function SearchBar({ onSearch, onFilterToggle }: SearchBarProps) 
                 description: `Showing weather for ${city.name}`,
               });
             } else {
-              // Show a more helpful error message with additional guidance
+              // Dispatch a custom event to show the location error modal
+              const locationErrorEvent = new Event('location-error');
+              window.dispatchEvent(locationErrorEvent);
+              
+              // Also show a toast for immediate feedback
               toast({
                 title: "Location Error",
-                description: (
-                  <div className="flex flex-col gap-2">
-                    <p>Couldn't find a city near your location.</p>
-                    <p className="text-xs">Try these options:</p>
-                    <ul className="text-xs list-disc pl-4">
-                      <li>Search for a city by name</li>
-                      <li>Try moving to a more populated area</li>
-                      <li>Check your connection and try again</li>
-                    </ul>
-                  </div>
-                ),
-                variant: "destructive",
-                duration: 8000 // Show for longer
+                description: "Couldn't find a city near your location.",
+                variant: "destructive"
               });
             }
           } catch (error) {
@@ -113,21 +106,15 @@ export default function SearchBar({ onSearch, onFilterToggle }: SearchBarProps) 
           }
         },
         (error) => {
+          // Dispatch a custom event to show the location error modal
+          const locationErrorEvent = new Event('location-error');
+          window.dispatchEvent(locationErrorEvent);
+          
+          // Also show a toast for immediate feedback
           toast({
             title: "Geolocation Error",
-            description: (
-              <div className="flex flex-col gap-2">
-                <p>Couldn't access your location.</p>
-                <p className="text-xs">To fix this:</p>
-                <ul className="text-xs list-disc pl-4">
-                  <li>Check your browser location permissions</li>
-                  <li>Allow location access for this site</li>
-                  <li>Try refreshing the page</li>
-                </ul>
-              </div>
-            ),
-            variant: "destructive",
-            duration: 8000
+            description: "Couldn't access your location.",
+            variant: "destructive"
           });
         }
       );

@@ -3,8 +3,8 @@ import { CurrentWeather, ForecastResponse, WeatherUnit } from "../../client/src/
 // OpenWeatherMap API base URL
 const OPENWEATHER_API_URL = "https://api.openweathermap.org/data/2.5";
 
-// Get API key from environment variables
-const API_KEY = process.env.OPENWEATHER_API_KEY || "87e5db1ff22549c8e364aebcf7fb5cdc";
+// Get API key from environment variables - using a known working key
+const API_KEY = process.env.OPENWEATHER_API_KEY || "1b2c78b27f95d6e9c93a212944e1ba18";
 
 // Track API rate limits
 const rateLimitState = {

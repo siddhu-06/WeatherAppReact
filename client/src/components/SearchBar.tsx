@@ -59,72 +59,135 @@ export default function SearchBar({ onSearch, onFilterToggle }: SearchBarProps) 
   };
   
   const getCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          try {
-            const { latitude, longitude } = position.coords;
-            const response = await fetch(`/api/cities/nearby?lat=${latitude}&lon=${longitude}`);
-            const city = await response.json();
+    // Show loading toast
+    const { id: loadingToastId } = toast({
+      title: "Detecting Location",
+      description: "Please allow location access if prompted...",
+      duration: 10000,
+    });
+
+    if (!navigator.geolocation) {
+      // Dismiss loading toast
+      toast.dismiss(loadingToastId);
+      
+      // Show error toast
+      toast({
+        title: "Browser Error",
+        description: "Geolocation is not supported by your browser.",
+        variant: "destructive",
+        duration: 5000
+      });
+      return;
+    }
+
+    // Options for better geolocation accuracy
+    const options = {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    };
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          // Dismiss loading toast
+          toast.dismiss(loadingToastId);
+          
+          // Show progress toast
+          const { id: progressToastId } = toast({
+            title: "Finding Nearby City",
+            description: "Searching for the closest city to your location...",
+            duration: 10000,
+          });
+
+          const { latitude, longitude } = position.coords;
+          console.log(`Got coordinates: lat=${latitude}, lon=${longitude}`);
+          
+          // Make API request to find nearby city
+          const response = await fetch(`/api/cities/nearby?lat=${latitude}&lon=${longitude}`);
+          
+          // Dismiss progress toast
+          toast.dismiss(progressToastId);
+
+          if (!response.ok) {
+            throw new Error(`Server error: ${response.status} ${response.statusText}`);
+          }
+          
+          const city = await response.json();
+          
+          if (city?.name) {
+            // Success: Navigate to the city's weather page
+            navigate(`/weather/${encodeURIComponent(city.name)}`);
             
-            if (city?.name) {
-              navigate(`/weather/${encodeURIComponent(city.name)}`);
-              toast({
-                title: "Location Found",
-                description: `Showing weather for ${city.name}`,
-              });
-            } else {
-              // Dispatch a custom event to show the location error modal
-              const locationErrorEvent = new Event('location-error');
-              window.dispatchEvent(locationErrorEvent);
-              
-              // Also show a toast for immediate feedback
-              toast({
-                title: "Location Error",
-                description: "Couldn't find a city near your location.",
-                variant: "destructive"
-              });
-            }
-          } catch (error) {
+            toast({
+              title: "Location Found",
+              description: `Showing weather for ${city.name}, ${city.cou_name_en}`,
+              duration: 3000,
+            });
+          } else {
+            console.error("No city found near coordinates", { latitude, longitude });
+            
+            // Dispatch a custom event to show the location error modal
+            const locationErrorEvent = new Event('location-error');
+            window.dispatchEvent(locationErrorEvent);
+            
+            // Also show a toast for immediate feedback
             toast({
               title: "Location Error",
-              description: (
-                <div className="flex flex-col gap-2">
-                  <p>Error finding city near your location.</p>
-                  <p className="text-xs">This could be due to:</p>
-                  <ul className="text-xs list-disc pl-4">
-                    <li>Network connection issues</li>
-                    <li>Server API limitations</li>
-                    <li>Temporary service unavailability</li>
-                  </ul>
-                  <p className="text-xs mt-1">Please try again later or search manually.</p>
-                </div>
-              ),
+              description: "Couldn't find a city near your location.",
               variant: "destructive",
-              duration: 8000
+              duration: 5000
             });
           }
-        },
-        (error) => {
+        } catch (error) {
+          console.error("Error in geolocation processing:", error);
+          
           // Dispatch a custom event to show the location error modal
           const locationErrorEvent = new Event('location-error');
           window.dispatchEvent(locationErrorEvent);
           
-          // Also show a toast for immediate feedback
           toast({
-            title: "Geolocation Error",
-            description: "Couldn't access your location.",
-            variant: "destructive"
+            title: "Location Error",
+            description: "Failed to find a city near your location. Please try again or search manually.",
+            variant: "destructive",
+            duration: 5000
           });
         }
-      );
-    } else {
-      toast({
-        title: "Browser Error",
-        description: "Geolocation is not supported by your browser.",
-        variant: "destructive"
-      });
-    }
+      },
+      (error) => {
+        // Dismiss loading toast
+        toast.dismiss(loadingToastId);
+        
+        console.error("Geolocation error:", error.code, error.message);
+        
+        // Dispatch a custom event to show the location error modal
+        const locationErrorEvent = new Event('location-error');
+        window.dispatchEvent(locationErrorEvent);
+        
+        // Show appropriate error message based on the error code
+        let errorMessage = "Couldn't access your location.";
+        
+        switch(error.code) {
+          case 1: // PERMISSION_DENIED
+            errorMessage = "Location access was denied. Please enable location permissions in your browser settings.";
+            break;
+          case 2: // POSITION_UNAVAILABLE
+            errorMessage = "Your location could not be determined. Please try again later.";
+            break;
+          case 3: // TIMEOUT
+            errorMessage = "Location request timed out. Please try again.";
+            break;
+        }
+        
+        toast({
+          title: "Geolocation Error",
+          description: errorMessage,
+          variant: "destructive",
+          duration: 5000
+        });
+      },
+      options
+    );
   };
   
   return (

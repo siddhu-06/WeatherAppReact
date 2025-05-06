@@ -175,10 +175,49 @@ export async function getCitiesAutocomplete(query: string): Promise<Autocomplete
 // Get a city near specified coordinates
 export async function getNearbyCity(lat: number, lon: number): Promise<City | null> {
   try {
+    console.log(`Finding city near coordinates: lat=${lat}, lon=${lon}`);
+    
+    // Try with a smaller radius first (10km)
+    let city = await findNearbyCity(lat, lon, 10000);
+    
+    // If not found, try with a medium radius (50km)
+    if (!city) {
+      console.log("No city found within 10km, trying 50km radius");
+      city = await findNearbyCity(lat, lon, 50000);
+    }
+    
+    // If still not found, try with a larger radius (100km)
+    if (!city) {
+      console.log("No city found within 50km, trying 100km radius");
+      city = await findNearbyCity(lat, lon, 100000);
+    }
+    
+    // If still not found, try a final attempt with 200km and less restrictive parameters
+    if (!city) {
+      console.log("No city found within 100km, trying 200km radius with less strict parameters");
+      city = await findNearbyCity(lat, lon, 200000, 5);
+    }
+    
+    if (city) {
+      console.log(`Found nearby city: ${city.name} (${city.country_code})`);
+    } else {
+      console.log("Could not find any nearby city after multiple attempts");
+    }
+    
+    return city;
+  } catch (error) {
+    console.error("Error fetching nearby city:", error);
+    return null;
+  }
+}
+
+// Helper function to find nearby cities with a specified radius
+async function findNearbyCity(lat: number, lon: number, radiusMeters: number, rows: number = 1): Promise<City | null> {
+  try {
     const searchParams = new URLSearchParams();
     searchParams.append("dataset", DATASET);
-    searchParams.append("geofilter.distance", `${lat},${lon},50000`);
-    searchParams.append("rows", "1");
+    searchParams.append("geofilter.distance", `${lat},${lon},${radiusMeters}`);
+    searchParams.append("rows", rows.toString());
     searchParams.append("sort", "-population");
     
     const response = await fetch(`${GEONAMES_API_URL}?${searchParams.toString()}`);
@@ -195,7 +234,7 @@ export async function getNearbyCity(lat: number, lon: number): Promise<City | nu
     
     return mapRecordToCity(data.records[0]);
   } catch (error) {
-    console.error("Error fetching nearby city:", error);
+    console.error(`Error fetching nearby city with radius ${radiusMeters}m:`, error);
     return null;
   }
 }

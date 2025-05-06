@@ -43,8 +43,8 @@ function mapRecordToCity(record: GeonamesResponse["records"][0]): City {
     population: fields.population,
     timezone: fields.timezone,
     coordinates: {
-      lat: fields.coordinates[0],
-      lon: fields.coordinates[1]
+      lat: String(fields.coordinates[0]),
+      lon: String(fields.coordinates[1])
     }
   };
 }

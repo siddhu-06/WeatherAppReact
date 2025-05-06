@@ -8,8 +8,8 @@ export interface City {
   population: number;
   timezone: string;
   coordinates: {
-    lat: number;
-    lon: number;
+    lat: string;
+    lon: string;
   };
   weather?: {
     temp_max?: number;

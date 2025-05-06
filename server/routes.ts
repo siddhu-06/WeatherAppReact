@@ -119,17 +119,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { lat, lon, units = 'metric' } = req.query;
       
-      if (typeof lat !== 'string' || typeof lon !== 'string') {
+      if (typeof lat !== 'string' || typeof lon !== 'string' || !lat || !lon) {
         return res.status(400).json({ message: 'Invalid coordinates' });
       }
       
-      const weather = await getCurrentWeather(
-        parseFloat(lat), 
-        parseFloat(lon), 
-        units as 'metric' | 'imperial'
-      );
-      
-      res.json(weather);
+      try {
+        const parsedLat = parseFloat(lat);
+        const parsedLon = parseFloat(lon);
+        
+        if (isNaN(parsedLat) || isNaN(parsedLon)) {
+          return res.status(400).json({ message: 'Invalid coordinates: could not parse as numbers' });
+        }
+        
+        const weather = await getCurrentWeather(
+          parsedLat, 
+          parsedLon, 
+          units as 'metric' | 'imperial'
+        );
+        
+        res.json(weather);
+      } catch (parseError) {
+        console.error('Error parsing coordinates:', parseError);
+        return res.status(400).json({ message: 'Invalid coordinates format' });
+      }
     } catch (error) {
       console.error('Error fetching current weather:', error);
       res.status(500).json({ message: 'Error fetching current weather' });

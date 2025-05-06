@@ -37,8 +37,8 @@ export default function Weather({ params }: WeatherProps) {
     isError: isCurrentError,
     error: currentError
   } = useCurrentWeather(
-    city?.coordinates ? Number(city.coordinates.lat) : 0, 
-    city?.coordinates ? Number(city.coordinates.lon) : 0
+    city?.coordinates?.lat || "", 
+    city?.coordinates?.lon || ""
   );
   
   // Fetch forecast data
@@ -49,8 +49,8 @@ export default function Weather({ params }: WeatherProps) {
     isError: isForecastError,
     error: forecastError
   } = useForecast(
-    city?.coordinates ? Number(city.coordinates.lat) : 0, 
-    city?.coordinates ? Number(city.coordinates.lon) : 0
+    city?.coordinates?.lat || "", 
+    city?.coordinates?.lon || ""
   );
   
   // Store viewed city data in context when we have both city and weather data

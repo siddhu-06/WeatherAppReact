@@ -16,6 +16,7 @@ export interface City {
     temp_min?: number;
     icon?: string;
   };
+  lastViewed?: number; // timestamp when the city was last viewed
 }
 
 export interface CitySearchParams {

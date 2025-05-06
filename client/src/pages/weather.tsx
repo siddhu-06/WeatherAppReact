@@ -90,7 +90,8 @@ export default function Weather({ params }: WeatherProps) {
           timezone: city.timezone,
           coordinates: { ...city.coordinates },
           weather: weatherSummary,
-          alternate_names: city.alternate_names || []
+          alternate_names: city.alternate_names || [],
+          lastViewed: Date.now() // Add timestamp for history tracking
         };
         
         addViewedCity(cityWithWeather);
@@ -207,28 +208,6 @@ export default function Weather({ params }: WeatherProps) {
       
       {/* City Information and Map */}
       <CityInfo city={city} />
-      
-      {/* Unit Switch */}
-      <div className="flex justify-end mb-6">
-        <div className="inline-flex rounded-md shadow-sm" role="group">
-          <Button
-            className={`px-4 py-2 text-sm font-medium rounded-l-lg ${
-              unit === 'metric' ? 'bg-primary text-white' : 'bg-white text-neutral-700'
-            }`}
-            onClick={() => setUnit('metric')}
-          >
-            °C
-          </Button>
-          <Button
-            className={`px-4 py-2 text-sm font-medium rounded-r-lg ${
-              unit === 'imperial' ? 'bg-primary text-white' : 'bg-white text-neutral-700'
-            }`}
-            onClick={() => setUnit('imperial')}
-          >
-            °F
-          </Button>
-        </div>
-      </div>
     </div>
   );
 }

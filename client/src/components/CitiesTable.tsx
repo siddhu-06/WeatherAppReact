@@ -77,104 +77,106 @@ export default function CitiesTable({ searchParams }: CitiesTableProps) {
   
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
-      <div className="data-table-container overflow-auto">
-        <table className="min-w-full divide-y divide-neutral-200">
-          <thead className="bg-neutral-100 sticky top-0 z-10">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider cursor-pointer">
-                <div className="flex items-center" onClick={() => handleSort('name')}>
-                  City Name
-                  <span className="material-icons ml-1 text-sm">
-                    {searchParams.sort === 'name' 
-                      ? (searchParams.sortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') 
-                      : 'unfold_more'}
-                  </span>
-                </div>
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider cursor-pointer">
-                <div className="flex items-center" onClick={() => handleSort('country_code')}>
-                  Country
-                  <span className="material-icons ml-1 text-sm">
-                    {searchParams.sort === 'country_code' 
-                      ? (searchParams.sortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') 
-                      : 'unfold_more'}
-                  </span>
-                </div>
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider cursor-pointer">
-                <div className="flex items-center" onClick={() => handleSort('population')}>
-                  Population
-                  <span className="material-icons ml-1 text-sm">
-                    {searchParams.sort === 'population' 
-                      ? (searchParams.sortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') 
-                      : 'unfold_more'}
-                  </span>
-                </div>
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider cursor-pointer">
-                <div className="flex items-center" onClick={() => handleSort('timezone')}>
-                  Timezone
-                  <span className="material-icons ml-1 text-sm">
-                    {searchParams.sort === 'timezone' 
-                      ? (searchParams.sortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') 
-                      : 'unfold_more'}
-                  </span>
-                </div>
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider">
-                Weather
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-neutral-200">
-            {cities.map(city => (
-              <tr 
-                key={city.id} 
-                className="city-row cursor-pointer"
-                onClick={() => handleCityClick(city)}
-                onContextMenu={(e) => handleRightClick(e, city)}
-              >
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-neutral-700">{city.name}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-neutral-700">{city.cou_name_en}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-neutral-700">{formatPopulation(city.population)}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-neutral-700">{formatTimezone(city.timezone)}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {city.weather ? (
-                    <div className="text-sm text-neutral-700 flex items-center">
-                      {city.weather.icon && (
-                        <AnimatedWeatherIcon 
-                          iconCode={city.weather.icon}
-                          size="sm"
-                          className="mr-2"
-                        />
-                      )}
-                      <span>
-                        {city.weather.temp_max !== undefined && city.weather.temp_min !== undefined ? (
-                          `${formatTemperature(city.weather.temp_max, unit)} / ${formatTemperature(city.weather.temp_min, unit)}`
-                        ) : (
-                          'View details'
-                        )}
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="text-sm text-neutral-400">
-                      Click to view
-                    </div>
-                  )}
-                </td>
+      {cities.length > 0 || isLoading ? (
+        <div className="data-table-container overflow-auto">
+          <table className="min-w-full divide-y divide-neutral-200">
+            <thead className="bg-neutral-100 sticky top-0 z-10">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider cursor-pointer">
+                  <div className="flex items-center" onClick={() => handleSort('name')}>
+                    City Name
+                    <span className="material-icons ml-1 text-sm">
+                      {searchParams.sort === 'name' 
+                        ? (searchParams.sortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') 
+                        : 'unfold_more'}
+                    </span>
+                  </div>
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider cursor-pointer">
+                  <div className="flex items-center" onClick={() => handleSort('country_code')}>
+                    Country
+                    <span className="material-icons ml-1 text-sm">
+                      {searchParams.sort === 'country_code' 
+                        ? (searchParams.sortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') 
+                        : 'unfold_more'}
+                    </span>
+                  </div>
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider cursor-pointer">
+                  <div className="flex items-center" onClick={() => handleSort('population')}>
+                    Population
+                    <span className="material-icons ml-1 text-sm">
+                      {searchParams.sort === 'population' 
+                        ? (searchParams.sortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') 
+                        : 'unfold_more'}
+                    </span>
+                  </div>
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider cursor-pointer">
+                  <div className="flex items-center" onClick={() => handleSort('timezone')}>
+                    Timezone
+                    <span className="material-icons ml-1 text-sm">
+                      {searchParams.sort === 'timezone' 
+                        ? (searchParams.sortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down') 
+                        : 'unfold_more'}
+                    </span>
+                  </div>
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-700 uppercase tracking-wider">
+                  Weather
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody className="bg-white divide-y divide-neutral-200">
+              {cities.map(city => (
+                <tr 
+                  key={city.id} 
+                  className="city-row cursor-pointer hover:bg-gray-50"
+                  onClick={() => handleCityClick(city)}
+                  onContextMenu={(e) => handleRightClick(e, city)}
+                >
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-neutral-700">{city.name}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-neutral-700">{city.cou_name_en}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-neutral-700">{formatPopulation(city.population)}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-neutral-700">{formatTimezone(city.timezone)}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {city.weather ? (
+                      <div className="text-sm text-neutral-700 flex items-center">
+                        {city.weather.icon && (
+                          <AnimatedWeatherIcon 
+                            iconCode={city.weather.icon}
+                            size="sm"
+                            className="mr-2"
+                          />
+                        )}
+                        <span>
+                          {city.weather.temp_max !== undefined && city.weather.temp_min !== undefined ? (
+                            `${formatTemperature(city.weather.temp_max, unit)} / ${formatTemperature(city.weather.temp_min, unit)}`
+                          ) : (
+                            'View details'
+                          )}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="text-sm text-neutral-400">
+                        Click to view
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : null}
       
       {/* Infinite scroll loading indicator */}
       {(hasNextPage || isFetchingNextPage) && (
@@ -189,8 +191,14 @@ export default function CitiesTable({ searchParams }: CitiesTableProps) {
       
       {/* If no cities found */}
       {cities.length === 0 && !isLoading && (
-        <div className="py-8 text-center">
-          <p className="text-neutral-600">No cities found matching your search criteria.</p>
+        <div className="py-8 flex flex-col items-center justify-center">
+          <div className="text-neutral-400 mb-2">
+            <span className="material-icons text-4xl">search_off</span>
+          </div>
+          <h3 className="text-lg font-medium text-neutral-700 mb-2">No Cities Found</h3>
+          <p className="text-neutral-600 max-w-md text-center">
+            We couldn't find any cities matching your search criteria. Try adjusting your search or filters.
+          </p>
         </div>
       )}
     </div>

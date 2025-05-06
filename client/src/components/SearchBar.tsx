@@ -142,35 +142,27 @@ export default function SearchBar({ onSearch, onFilterToggle }: SearchBarProps) 
           onFocus={() => searchQuery.length > 1 && setShowAutocomplete(true)}
         />
         
-        {showAutocomplete && suggestions && suggestions.length > 0 && (
+        {/* Only show autocomplete dropdown if we actually have suggestions */}
+        {showAutocomplete && suggestions && suggestions.length > 0 && !isLoading && (
           <div className="absolute z-10 w-full mt-1 bg-white shadow-lg rounded-lg border border-neutral-200">
-            {isLoading ? (
-              <div className="px-4 py-2 text-sm text-neutral-700">Loading suggestions...</div>
-            ) : (
-              suggestions.map(suggestion => (
-                <div 
-                  key={suggestion.id} 
-                  className="autocomplete-item px-4 py-2 cursor-pointer border-b border-neutral-100"
-                  onClick={() => handleSuggestionSelect(suggestion)}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    handleViewWeather(suggestion);
-                  }}
-                >
-                  <div className="font-medium">{suggestion.name}</div>
-                  <div className="text-sm text-neutral-400">{suggestion.country}</div>
-                </div>
-              ))
-            )}
+            {suggestions.map(suggestion => (
+              <div 
+                key={suggestion.id} 
+                className="autocomplete-item px-4 py-2 cursor-pointer border-b border-neutral-100 hover:bg-gray-50"
+                onClick={() => handleSuggestionSelect(suggestion)}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  handleViewWeather(suggestion);
+                }}
+              >
+                <div className="font-medium">{suggestion.name}</div>
+                <div className="text-sm text-neutral-400">{suggestion.country}</div>
+              </div>
+            ))}
           </div>
         )}
         
-        {/* Show "No cities found" message outside the suggestions dropdown */}
-        {showAutocomplete && debouncedQuery.length > 1 && (!suggestions || suggestions.length === 0) && !isLoading && (
-          <div className="absolute z-10 w-full mt-1 bg-white shadow-lg rounded-lg border border-neutral-200">
-            <div className="px-4 py-2 text-sm text-neutral-700">No cities found</div>
-          </div>
-        )}
+        {/* "No cities found" is shown in the table instead */}
       </div>
       
       <div className="flex gap-2">

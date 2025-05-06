@@ -120,11 +120,11 @@ export default function SearchBar({ onSearch, onFilterToggle }: SearchBarProps) 
           onFocus={() => searchQuery.length > 1 && setShowAutocomplete(true)}
         />
         
-        {showAutocomplete && (
+        {showAutocomplete && suggestions && suggestions.length > 0 && (
           <div className="absolute z-10 w-full mt-1 bg-white shadow-lg rounded-lg border border-neutral-200">
             {isLoading ? (
               <div className="px-4 py-2 text-sm text-neutral-700">Loading suggestions...</div>
-            ) : suggestions && suggestions.length > 0 ? (
+            ) : (
               suggestions.map(suggestion => (
                 <div 
                   key={suggestion.id} 
@@ -139,11 +139,14 @@ export default function SearchBar({ onSearch, onFilterToggle }: SearchBarProps) 
                   <div className="text-sm text-neutral-400">{suggestion.country}</div>
                 </div>
               ))
-            ) : (
-              debouncedQuery.length > 1 && (
-                <div className="px-4 py-2 text-sm text-neutral-700">No cities found</div>
-              )
             )}
+          </div>
+        )}
+        
+        {/* Show "No cities found" message outside the suggestions dropdown */}
+        {showAutocomplete && debouncedQuery.length > 1 && (!suggestions || suggestions.length === 0) && !isLoading && (
+          <div className="absolute z-10 w-full mt-1 bg-white shadow-lg rounded-lg border border-neutral-200">
+            <div className="px-4 py-2 text-sm text-neutral-700">No cities found</div>
           </div>
         )}
       </div>

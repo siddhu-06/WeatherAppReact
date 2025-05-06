@@ -21,7 +21,9 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-6 border-t border-neutral-600 pt-6 text-center text-sm text-neutral-400">
-          <p>Weather data provided by <a href="https://openweathermap.org" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">OpenWeatherMap</a></p>
+          <p className="font-serif text-lg bg-gradient-to-r from-pink-400 to-blue-500 bg-clip-text text-transparent">
+            Made with ❤️ by <span className="font-bold italic text-xl">Siddhu</span>
+          </p>
           <p className="mt-2">© {new Date().getFullYear()} Weather Forecast App. All rights reserved.</p>
         </div>
       </div>
